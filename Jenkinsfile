@@ -7,6 +7,7 @@ pipeline {
 
     environment {
         APP_NAME = 'my-app'
+        NEXUS_DOMAIN = '170.64.161.251:8081'
         NEXUS_REGISTRY = '170.64.161.251:8081/docker-hosted'
     }
 
@@ -48,8 +49,8 @@ pipeline {
                 echo 'Pushing docker image...'
                 withCredentials([usernamePassword(credentialsId: 'NEXUS_DOCKER_CRED', passwordVariable: 'PASSWORD', usernameVariable: 'USER')]){
                         sh '''
-                            echo ${PASSWORD} | docker login -u $USER --password-stdin
-                            docker push ${NEXUS_REGISTRY}/${APP_NAME:${IMAGE_TAG}
+                            echo ${PASSWORD} | docker login -u ${USER} --password-stdin ${NEXUS_DOMAIN}
+                            docker push ${NEXUS_REGISTRY}/${APP_NAME}:${IMAGE_TAG}
                         '''
                     }
             }
