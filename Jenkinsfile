@@ -63,5 +63,23 @@ pipeline {
                 echo 'Deploying the application...'
             }
         }
+        stage('commit version change') {
+            steps{
+                withCredentials([usernamePassword(credentialsId: 'GITHUB_TOKEN', passwordVariable: 'TOKEN', usernameVariable: 'USERNAME')]) {
+                    sh '''
+                        # only need to be configured once, can also be configured inside Jenkins Server
+                        git config --global user.email "jenkins@mycompany.com"
+                        git config --global user.name "jenkins ci"
+
+                        # set https remote with token auth
+                        git remote set-url origin https://${USERNAME}:${TOKEN}@github.com/chromiumsilver/simple-java-maven-app.git
+                        
+                        git add pom.xml
+                        git commit -m "version bump [ci skip]"
+                        git push origin HEAD:${BRANCH_NAME}
+                    ''' 
+                }
+            }
+        }
     }
 }
