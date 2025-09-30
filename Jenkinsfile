@@ -12,12 +12,12 @@ pipeline {
     }
 
     stages{
-        // stage('test') {
-        //     steps{
-        //         echo "Testing the application..."
-        //         sh 'mvn test'
-        //     }
-        // }
+        stage('test') {
+            steps{
+                echo "Testing the application..."
+                // sh 'mvn test'
+            }
+        }
         stage('increment version') {
             steps{
                 echo 'Incrementing app version...'
