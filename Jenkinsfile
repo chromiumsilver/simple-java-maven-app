@@ -55,7 +55,8 @@ pipeline {
                 sshagent(['ec2-server-key']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ${EC2_HOST} "
-                            docker run -dp 8080:8080 --name my-app ${NEXUS_REGISTRY}/${APP_NAME}:${IMAGE_TAG}
+                            docker stop my-app || true &&
+                            docker run -dp 8080:8080 --rm --name my-app ${NEXUS_REGISTRY}/${APP_NAME}:${IMAGE_TAG}
                         "
                     '''
                 }
