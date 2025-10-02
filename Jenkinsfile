@@ -52,7 +52,13 @@ pipeline {
         stage('deploy') {
             steps{
                 echo 'Deploying the application...'
-
+                sshagent(['ec2-server-key']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ${EC2_HOST} "
+                            docker run -dp 8080:8080 --name my-app ${NEXUS_REGISTRY}/${APP_NAME}:${IMAGE_TAG}
+                        "
+                    '''
+                }
             }
         }
         stage('commit version change') {
