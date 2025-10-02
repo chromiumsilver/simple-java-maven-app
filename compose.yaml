@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+    my-app:
+      image: 170.64.161.251:8081/docker-hosted/my-app:${IMAGE_TAG}
+      ports:
+        - 8080:8080
+    db:
+      image: postgres:17
+      container_name: postgres_db
+      # restart: unless-stopped
+      environment:
+        POSTGRES_PASSWORD: mypassword
+      ports:
+        - "5432:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:

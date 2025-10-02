@@ -54,9 +54,10 @@ pipeline {
                 echo 'Deploying the application...'
                 sshagent(['ec2-server-key']) {
                     sh '''
+                        scp -o StrictHostKeyChecking=no compose.yml ${EC2_HOST}:/home/ec2-user/
                         ssh -o StrictHostKeyChecking=no ${EC2_HOST} "
-                            docker stop my-app || true &&
-                            docker run -dp 8080:8080 --rm --name my-app ${NEXUS_REGISTRY}/${APP_NAME}:${IMAGE_TAG}
+                            export IMAGE_TAG=${IMAGE_TAG}
+                            docker compose up -d
                         "
                     '''
                 }
