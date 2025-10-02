@@ -1,7 +1,7 @@
 FROM amazoncorretto:17-alpine
 
 EXPOSE 8080
-COPY ./target/my-app-*.jar /usr/app/
 WORKDIR /usr/app
+COPY ./target/my-app-*.jar /usr/app/app.jar
 
-CMD ["java", "-jar", "my-app-*.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
