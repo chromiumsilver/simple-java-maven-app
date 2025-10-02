@@ -54,9 +54,11 @@ pipeline {
                 echo 'Deploying the application...'
                 sshagent(['ec2-server-key']) {
                     sh '''
-                        scp -o StrictHostKeyChecking=no compose.yaml ${EC2_HOST}:/home/ec2-user/
+                        echo "IMAGE_TAG=${IMAGE_TAG}" > .env
+
+                        scp -o StrictHostKeyChecking=no compose.yaml .env ${EC2_HOST}:/home/ec2-user/
+
                         ssh -o StrictHostKeyChecking=no ${EC2_HOST} "
-                            export IMAGE_TAG=${IMAGE_TAG}
                             docker compose up -d
                         "
                     '''
