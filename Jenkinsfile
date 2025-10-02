@@ -9,21 +9,21 @@ pipeline {
         APP_NAME = 'my-app'
         NEXUS_DOMAIN = '170.64.161.251:8081'
         NEXUS_REGISTRY = '170.64.161.251:8081/docker-hosted'
+        EC2_HOST = "ec2-user@35.93.187.190"
     }
 
     stages{
-        stage('test') {
-            steps{
-                echo "Testing the application..."
-                // sh 'mvn test'
-            }
-        }
         stage('increment version') {
             steps{
                 echo 'Incrementing app version...'
                 sh 'mvn build-helper:parse-version versions:set \
                 -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
                 versions:commit'
+                script {
+                    def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
+                    def version = matcher[0][1]
+                    env.IMAGE_TAG = "${version}-${BUILD_NUMBER}"
+                }
             }
         }
         stage('build app') {
@@ -35,12 +35,6 @@ pipeline {
         stage('build image') {
             steps{
                 echo 'Building docker image....'
-                script {
-                    def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
-                    def version = matcher[0][1]
-                    env.IMAGE_TAG = "${version}-${BUILD_NUMBER}"
-                }
-
                 sh "docker build -t ${NEXUS_REGISTRY}/${APP_NAME}:${IMAGE_TAG} ."
             }
         }
@@ -56,11 +50,9 @@ pipeline {
             }
         }
         stage('deploy') {
-            when{
-                branch 'main'
-            }
             steps{
                 echo 'Deploying the application...'
+
             }
         }
         stage('commit version change') {
